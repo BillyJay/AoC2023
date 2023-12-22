@@ -13,7 +13,7 @@ map<string, int> nm_to_idx;
 map< string, bool >flip_flop_states;
 map<string, map<string, bool> > conjs;
 map<string, vector<string> > receiver_devices;
-vector<vector<string> >	stack;
+vector<vector<string> >	queue;
 long long lows = 0;
 long long highs = 0;
 
@@ -29,11 +29,11 @@ void send_signal(string sender, string signal, vector<string> receivers){
 			if (signal == "low"){
 				if(flip_flop_states[el]==0){
 					flip_flop_states[el] = 1;
-					stack.push_back({el,"high"});
+					queue.push_back({el,"high"});
 				}
 				else{
 					flip_flop_states[el] = 0;
-					stack.push_back({el,"low"});
+					queue.push_back({el,"low"});
 				}
 			}
 		}
@@ -48,7 +48,7 @@ void send_signal(string sender, string signal, vector<string> receivers){
 			for(auto ff : conjs[el]){
 				if(ff.second==0) output_signal = "high";
 			}
-			stack.push_back({el,output_signal});
+			queue.push_back({el,output_signal});
 		}
 	}
 }
@@ -117,11 +117,11 @@ int main(){
 	}
 	for(int rep = 0; rep < 1000; rep++){
 		lows++;
-		stack.push_back({"broadcaster", "low"});
-		while(stack.size()!=0){
-			vector<string> top_element = stack[0];
+		queue.push_back({"broadcaster", "low"});
+		while(queue.size()!=0){
+			vector<string> top_element = queue[0];
 			send_signal(top_element[0],top_element[1],receiver_devices[top_element[0]]);
-			stack.erase(stack.begin());
+			queue.erase(queue.begin());
 		}
 	}
 	cout<<lows<<" "<<highs<<endl;
